@@ -21,3 +21,4 @@ def fetch_yahoo_option_chain(ticker = "", expiry = ""):
         raise ValueError(f"Expiry {expiry} not found for ticker {ticker}")
     
     chain = tkr.option_chain(ex)
+    
