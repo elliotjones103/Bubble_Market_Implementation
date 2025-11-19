@@ -47,7 +47,6 @@ st.markdown(
 
 ### Sidebar controls ###
 st.sidebar.header("Inputs")
-
 default_ticker = "AAPL"
 ticker = st.sidebar.text_input("Ticker symbol", value=default_ticker).upper()
 
@@ -69,7 +68,6 @@ expiry = st.sidebar.selectbox(
 band_low = st.sidebar.slider("Delta band lower bound", 0.0, 0.9, 0.25, 0.05)
 band_high = st.sidebar.slider("Delta band upper bound", band_low + 0.05, 1.0, 0.70, 0.05)
 left_mode = st.sidebar.selectbox("Left extrapolation mode", ["linear", "min", "max"])
-
 run_button = st.sidebar.button("Run Delta-band Estimation")
 
 ### Main logic ###
@@ -81,7 +79,7 @@ if run_button:
                 expiry=None if expiry in (None, "None") else expiry,
             )
 
-            # sensible strike region around the money
+            ### sensible strike region around the money ###
             mask = (K > 0.7 * S0) & (K < 1.5 * S0)
             K_use = K[mask]
             C_use = C[mask]
@@ -99,7 +97,7 @@ if run_button:
 
         st.subheader(f"Results for {ticker} (exp {expiry})")
 
-        # ---- metrics row ----
+        ### metrics row ###
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("Spot price $S_0$ (USD)", f"{S0:.2f}")
         col2.metric("Time to expiry $T$ (years)", f"{T:.4f}")
@@ -110,32 +108,27 @@ if run_button:
             f"Risk-free rate $r$ assumed: **{r:.4f}**. "
             "Results are sensitive to delta band, tail assumptions, and short-maturity noise."
         )
-
         st.divider()
 
-        # ---- plots in a vertical stack ----
+        ### plots in a vertical stack ###
         fig1 = make_delta_band_fig(
             est,
             show="fundamental",
             title=f"Delta-band reconstruction for {ticker} exp {expiry} (fundamental)",
         )
-
         fig2 = make_delta_band_fig(
             est,
             show="observed",
             title=f"Delta-band reconstruction for {ticker} exp {expiry} (observed)",
         )
 
-
         col_left, col_right = st.columns(2)
-
         with col_left:
             st.pyplot(fig1, use_container_width=False)
-
         with col_right:
             st.pyplot(fig2, use_container_width=False)
 
-        # ---- optional raw data ----
+        ### raw data ###
         with st.expander("Show raw option quotes used in estimation"):
             st.dataframe(
                 calls_df[["strike", "bid", "ask", "lastPrice"]],
@@ -147,6 +140,5 @@ if run_button:
             "A value near zero is consistent with a true-martingale model; "
             "larger positive values suggest a potential bubble component under the chosen assumptions."
         )
-
     except Exception as e:
         st.error(f"Something went wrong: {e}")
