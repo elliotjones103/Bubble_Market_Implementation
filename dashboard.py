@@ -5,6 +5,8 @@ import yfinance as yf
 from bubble_detector.data import fetch_yahoo_option_chain, choose_ticker_and_expiry
 from bubble_detector.Delta_band import delta_band_from_calls, plot_call_and_tail_delta_band
 from bubble_detector.models import sim_cev_paths, sim_bs_paths, sim_sabr_beta1_paths
+import pathlib
+import base64
 
 
 
@@ -45,8 +47,8 @@ st.set_page_config(
 )
 st.title("Delta-band Bubble Detector")
 st.markdown(
-    "Estimate the martingale defect $m(T)$ from option prices using the "
-"delta-band estimator developed in the Masters Thesis - Modelling and Quantifying the Martingale Defect in Asset Price Bubbles")
+    "A tool that estimates the martingale defect $m(T)$ from option prices using the "
+"delta-band estimator highlighted in the Masters Thesis: **Modelling and Quantifying the Martingale Defect in Asset Price Bubbles by Elliot Jones**")
 
 st.sidebar.header("Inputs")
 mode = st.sidebar.radio("Data source",["Market options", "Black-Scholes model", "CEV strict local model", "SABR model"],)
@@ -112,7 +114,7 @@ elif mode == "SABR model":
 
 run_button = st.sidebar.button("Run Delta-band Estimation")
 
-tab_app, tab_math = st.tabs(["Estimator", "Mathematical background"])
+tab_app, tab_math, tab_diss = st.tabs(["Estimator", "Mathematical background", "Dissertation Paper"])
 
 with tab_app:
     if run_button:
@@ -204,7 +206,7 @@ with tab_app:
 
             
             st.write(
-                f"Risk-free rate $r$ assumed: **{r:.4f}**. "
+                f"Risk-free rate $r$ assumed: **{r:.2f}**. "
                 "Results are sensitive to delta band, tail assumptions, and short-maturity noise."
             )
             st.divider()
@@ -351,4 +353,22 @@ $
 We apply the same estimator both to **simulated models** (Black–Scholes, CEV, SABR)
 and to **live market options**, so you can compare the theory against real market data.
     """)
+
+with tab_diss: 
+    st.markdown("---")
+    st.subheader("Full thesis (embedded PDF)")
+
+    pdf_path = pathlib.Path(__file__).parent / "ASSETS" / "CODE_THESIS.pdf"
+    if pdf_path.exists():
+        with open(pdf_path, "rb") as f:
+            pdf_bytes = f.read()
+        base64_pdf = base64.b64encode(pdf_bytes).decode("utf-8")
+
+        pdf_display = f"""
+        <iframe src="data:application/pdf;base64,{base64_pdf}"
+                width="100%" height="800" type="application/pdf"></iframe>
+        """
+        st.markdown(pdf_display, unsafe_allow_html=True)
+    else:
+        st.info("PDF file not found in `assets/`. Add it to enable embedding.")
 
