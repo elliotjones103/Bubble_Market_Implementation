@@ -354,10 +354,9 @@ We apply the same estimator both to **simulated models** (Black–Scholes, CEV, 
 and to **live market options**, so you can compare the theory against real market data.
     """)
 
-with tab_diss:  # use the actual name of your tab variable
+with tab_diss:  
     st.subheader("Full thesis")
 
-    # Build absolute path relative to *this file*
     pdf_path = (pathlib.Path(__file__).parent / "assets" / "CODE_THESIS.pdf").resolve()
 
     if not pdf_path.exists():
@@ -367,9 +366,8 @@ with tab_diss:  # use the actual name of your tab variable
             "Check the folder and file name match exactly: "
             "`bubble_detector/assets/CODE_THESIS.pdf`."
         )
-        st.stop()  # don't try to load a missing file
+        st.stop()  
 
-    # If we get here, the file really exists – show a download button first
     with open(pdf_path, "rb") as f:
         pdf_bytes = f.read()
 
