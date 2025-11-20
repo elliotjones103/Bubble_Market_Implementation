@@ -354,21 +354,29 @@ We apply the same estimator both to **simulated models** (Black–Scholes, CEV, 
 and to **live market options**, so you can compare the theory against real market data.
     """)
 
-with tab_diss: 
-    st.markdown("---")
-    st.subheader("Full thesis (embedded PDF)")
+with tab_diss:  # use the actual name of your tab variable
+    st.subheader("Full thesis")
 
-    pdf_path = pathlib.Path(__file__).parent / "ASSETS" / "CODE_THESIS.pdf"
-    if pdf_path.exists():
-        with open(pdf_path, "rb") as f:
-            pdf_bytes = f.read()
-        base64_pdf = base64.b64encode(pdf_bytes).decode("utf-8")
+    # Build absolute path relative to *this file*
+    pdf_path = (pathlib.Path(__file__).parent / "assets" / "CODE_THESIS.pdf").resolve()
 
-        pdf_display = f"""
-        <iframe src="data:application/pdf;base64,{base64_pdf}"
-                width="100%" height="800" type="application/pdf"></iframe>
-        """
-        st.markdown(pdf_display, unsafe_allow_html=True)
-    else:
-        st.info("PDF file not found in `assets/`. Add it to enable embedding.")
+    if not pdf_path.exists():
+        st.error(
+            "Thesis PDF not found.\n\n"
+            f"I expected it at:\n\n`{pdf_path}`\n\n"
+            "Check the folder and file name match exactly: "
+            "`bubble_detector/assets/CODE_THESIS.pdf`."
+        )
+        st.stop()  # don't try to load a missing file
+
+    # If we get here, the file really exists – show a download button first
+    with open(pdf_path, "rb") as f:
+        pdf_bytes = f.read()
+
+    st.download_button(
+        label=" Download MSc thesis (PDF)",
+        data=pdf_bytes,
+        file_name="CODE_THESIS.pdf",
+        mime="application/pdf",
+    )
 
