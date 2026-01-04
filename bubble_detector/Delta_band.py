@@ -102,7 +102,7 @@ def delta_band_from_calls(K, C, S0, T, r=0.0, d=0.0,
         gamma = left_alpha/(1.0-left_alpha) if left_alpha < 1 else 1e6
         K_left = np.linspace(0.0, K0, 256)
         q_left = 1.0 - (1.0-q0)*(K_left/K0)**gamma
-        E_left = float(np.trapz(q_left, K_left))
+        E_left = float(np.trapezoid(q_left, K_left))
     else:
         if left_mode == "min":
             K_left = np.linspace(0.0, K0, 64); q_left = np.full_like(K_left, q0); E_left = K0*q0
@@ -116,7 +116,7 @@ def delta_band_from_calls(K, C, S0, T, r=0.0, d=0.0,
     lam = qN / max(CN, 1e-12)
     K_right = np.linspace(KN, KN + 20.0/lam, 256)
     q_right = qN * np.exp(-lam*(K_right-KN))
-    E_mid   = float(np.trapz(q_mid, K_mid))
+    E_mid   = float(np.trapezoid(q_mid, K_mid))
     E_right = float(CN)  # exact integral under our match
     E_hat   = float(E_left + E_mid + E_right)
     m_hat   = float(F0T - E_hat)
