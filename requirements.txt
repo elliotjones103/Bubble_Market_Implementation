@@ -5,3 +5,4 @@ matplotlib
 scipy
 plotly
 yfinance
+numpy==1.26.4
